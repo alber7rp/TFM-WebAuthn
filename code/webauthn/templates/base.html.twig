@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="UTF-8">
+        <title>{% block title %}TFM WebAuthn{% endblock %}</title>
+        {% block stylesheets %}
+          <link rel="stylesheet" type="text/css" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
+          <link rel="stylesheet" type="text/css" href="assets/style.css">
+          <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.6.3/css/all.css" integrity="sha384-UHRtZLI+pbxtHCWp1t77Bi1L4ZtiqrqD80Kn4Z8NTSRyMA2Fd33n5dQ8lWUE00s/" crossorigin="anonymous">
+        {% endblock %}
+    </head>
+    <body>
+      <div class="col-md-12" style="text-align:center; margin-bottom:5%;">
+        <img src="assets/webauthn.png" alt="" style="width:30%">
+      </div>
+        {% block body %}{% endblock %}
+        {% block javascripts %}
+          <script src="/assets/jquery.min.js"></script>
+          <script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
+        {% endblock %}
+        <footer>
+          <div class="row" style="text-align:center;">
+            <div class="col-md-4"><h5 style="margin-top:5%"> Máster Interuniversitario de Seguridad de las TIC </h5></div>
+            <div class="col-md-4"><img src="assets/uoc.png" alt="" style="width:15%"></div>
+            <div class="col-md-4"><h5 style="margin-top:5%"> Alberto Gabriel Ruiz Pérez </h5></div>
+          </div>
+        </footer>
+    </body>
+</html>

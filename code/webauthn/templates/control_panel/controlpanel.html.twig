@@ -1,0 +1,122 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Control Panel{% endblock %}
+
+{% block body %}
+<h2 style="text-align:center"><i class='fas fa-user-circle'></i> {{Username}} &nbsp;&nbsp;&nbsp;&nbsp; <a href="/logout"><i class='fas fa-power-off' style='color:red'></i></a> &nbsp;&nbsp;&nbsp;&nbsp; <button type="button" class="btn btn-light" onclick="registernewcredential()">Register new credential <i class='fas fa-plus-circle' style='color:green'></i></button></h2>
+<div>&nbsp;</div>
+
+<div class="row" style="margin-bottom:10%">
+  {% for credential in credentials %}
+    <div class="col-md-3">
+      <div class="card">
+        <div class="card-header">
+          Credential ID: {{ credential.credentialId }}
+        </div>
+        <div class="card-body">
+          <h5 class="card-title">Public Key</h5>
+          <p class="card-text">{{ credential.credentialPublicKey }}</p>
+          <a href='/deletecredential/{{ credential.id }}' class="btn btn-danger">Delete credential</a>
+        </div>
+      </div>
+    </div>
+  {% endfor %}
+</div>
+
+<script>
+function registernewcredential() {
+
+
+    // get default args
+    window.fetch('/webauthn/getCreateArgs', {method:'GET',cache:'no-cache'}).then(function(response) {
+        return response.json();
+
+        // convert base64 to arraybuffer
+    }).then(function(json) {
+
+        // error handling
+        if (json.success === false) {
+            throw new Error(json.msg);
+        }
+
+        // replace binary base64 data with ArrayBuffer. a other way to do this
+        // is the reviver function of JSON.parse()
+        recursiveBase64StrToArrayBuffer(json);
+        return json;
+
+       // create credentials
+    }).then(function(createCredentialArgs) {
+        console.log(createCredentialArgs);
+        return navigator.credentials.create(createCredentialArgs);
+
+        // convert to base64
+    }).then(function(cred) {
+        return {
+            clientDataJSON: cred.response.clientDataJSON  ? arrayBufferToBase64(cred.response.clientDataJSON) : null,
+            attestationObject: cred.response.attestationObject ? arrayBufferToBase64(cred.response.attestationObject) : null
+        };
+
+        // transfer to server
+    }).then(JSON.stringify).then(function(AuthenticatorAttestationResponse) {
+        return window.fetch('/webauthn/processCreate', {method:'POST', body: AuthenticatorAttestationResponse, cache:'no-cache'});
+
+        // convert to JSON
+    }).then(function(response) {
+        return response.json();
+
+        // analyze response
+    }).then(function(json) {
+       if (json.success) {
+           swal("Registration of new credential success", "", "success").then(() => {window.location.replace("");});
+       } else {
+           throw new Error(json.msg);
+       }
+
+       // catch errors
+    }).catch(function(err) {
+        swal("Error", "Unknown error occured.", "error");
+    });
+}
+
+function recursiveBase64StrToArrayBuffer(obj) {
+    let prefix = '?BINARY?B?';
+    let suffix = '?=';
+    if (typeof obj === 'object') {
+        for (let key in obj) {
+            if (typeof obj[key] === 'string') {
+                let str = obj[key];
+                if (str.substring(0, prefix.length) === prefix && str.substring(str.length - suffix.length) === suffix) {
+                    str = str.substring(prefix.length, str.length - suffix.length);
+
+                    let binary_string = window.atob(str);
+                    let len = binary_string.length;
+                    let bytes = new Uint8Array(len);
+                    for (var i = 0; i < len; i++)        {
+                        bytes[i] = binary_string.charCodeAt(i);
+                    }
+                    obj[key] = bytes.buffer;
+                }
+            } else {
+                recursiveBase64StrToArrayBuffer(obj[key]);
+            }
+        }
+    }
+}
+
+/**
+ * Convert a ArrayBuffer to Base64
+ * @param {ArrayBuffer} buffer
+ * @returns {String}
+ */
+function arrayBufferToBase64(buffer) {
+    var binary = '';
+    var bytes = new Uint8Array(buffer);
+    var len = bytes.byteLength;
+    for (var i = 0; i < len; i++) {
+        binary += String.fromCharCode( bytes[ i ] );
+    }
+    return window.btoa(binary);
+}
+</script>
+
+{% endblock %}
