@@ -7,7 +7,7 @@
   ```
   composer install
   ```
-- Previamente se deberá tener instalado Docker en la máquina. En el directorio raíz, jecutaremos el siguiente comando para crear y levantar los contenedores necesarios (mysql y servidor de apache):
+- Previamente se deberá tener instalado Docker en la máquina. En el directorio raíz, ejecutaremos el siguiente comando para crear y levantar los contenedores necesarios (mysql y servidor de apache):
   ```
   docker-compose up -d
   ```
