@@ -18,3 +18,6 @@
 - Symfony 4
 - Librería WebAuthn para el lado del servidor [lbuchs/WebAuthn](https://github.com/lbuchs/WebAuthn)
 - OpenSSL
+
+### Ejemplo de uso:
+![](images/WebAuthn.gif)
